@@ -1,9 +1,10 @@
 package com.yoshi_self;
 
-import java.nio.ByteBuffer;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Arrays;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
 
 public class Base32Decoder {
@@ -32,13 +33,14 @@ public class Base32Decoder {
     }
 
     /**
-     * Decode this.source
+     * Decode this.source to String with specified charset
      *
-     * @return byte[] decoded bytes
+     * @param Charset charset of original string
+     * @return String decoded String
      */
-    public byte[] decode() {
+    public String decode(Charset charset) {
         if(this.source.length == 0) {
-            return this.source;
+            return "";
         }
 
         int bufferSize = this.source.length / this.DECODE_UNIT * this.ENCODE_UNIT;
@@ -50,18 +52,19 @@ public class Base32Decoder {
             resultBuffer.put(unit);
         }
 
-        // find last index not 0 and return until it
-        byte[] decodedBytes = resultBuffer.array();
-        int lastIdx = decodedBytes.length - 1;
+        String result = new String(resultBuffer.array(), charset);
+
+        // find last index not null and return until it
+        int lastIdx = result.length() - 1;
         for(int i = lastIdx; i >= 1; --i) {
-            if(decodedBytes[i] == 0) {
+            if(result.charAt(i) == '\000') {
                 lastIdx = i - 1;
             }
             else {
                 break;
             }
         }
-        return Arrays.copyOfRange(decodedBytes, 0, lastIdx + 1);
+        return result.substring(0, lastIdx + 1);
     }
 
     /**
