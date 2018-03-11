@@ -50,7 +50,18 @@ public class Base32Decoder {
             resultBuffer.put(unit);
         }
 
-        return resultBuffer.array();
+        // find last index not 0 and return until it
+        byte[] decodedBytes = resultBuffer.array();
+        int lastIdx = decodedBytes.length - 1;
+        for(int i = lastIdx; i >= 1; --i) {
+            if(decodedBytes[i] == 0) {
+                lastIdx = i - 1;
+            }
+            else {
+                break;
+            }
+        }
+        return Arrays.copyOfRange(decodedBytes, 0, lastIdx + 1);
     }
 
     /**
