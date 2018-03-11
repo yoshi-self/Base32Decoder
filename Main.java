@@ -12,8 +12,7 @@ public class Main {
         String encodedString = "KRUGS4ZANFZSAQTBONSTGMSEMVRW6ZDFOI======";
         Charset charset = StandardCharsets.UTF_8;
         Base32Decoder decoder = new Base32Decoder(encodedString.getBytes(charset));
-        byte[] decodedBytes = decoder.decode();
-        String result = new String(decodedBytes, charset);
+        String result = decoder.decode(charset);
         System.out.println(result);
     }
 }
