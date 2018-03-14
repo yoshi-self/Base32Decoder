@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Arrays;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 
 public class Base32Decoder {
@@ -27,6 +28,10 @@ public class Base32Decoder {
         this.source = source; 
     }
 
+    public Base32Decoder(String source) {
+        this.source = source.getBytes(StandardCharsets.US_ASCII);
+    }
+
     public void setSource(byte[] source) {
         this.source = source;
         this.pos = 0;
@@ -38,7 +43,7 @@ public class Base32Decoder {
      * @param Charset charset of original string
      * @return String decoded String
      */
-    public String decode(Charset charset) {
+    public String decodeToString(Charset charset) {
         if(this.source.length == 0) {
             return "";
         }
@@ -65,6 +70,29 @@ public class Base32Decoder {
             }
         }
         return result.substring(0, lastIdx + 1);
+    }
+
+    /**
+     * Decode this.source to bytes[] of specified length
+     *
+     * @param int byte length of original bytes
+     * @return byte[] decoded byte[] of specified length
+     */
+    public byte[] decodeToBytes(int length) {
+        if(this.source.length == 0) {
+            return new byte[]{};
+        }
+
+        int bufferSize = this.source.length / this.DECODE_UNIT * this.ENCODE_UNIT;
+        ByteBuffer resultBuffer = ByteBuffer.allocate(bufferSize);
+
+        // decode
+        for(this.pos = 0; this.pos < this.source.length; this.pos += this.DECODE_UNIT) {
+            byte[] unit = decodeUnit();
+            resultBuffer.put(unit);
+        }
+
+        return Arrays.copyOfRange(resultBuffer.array(), 0, length);
     }
 
     /**
